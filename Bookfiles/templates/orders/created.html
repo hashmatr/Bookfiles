@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed!{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-xs mt-12 px-6">
+    <div class="w-16 h-16 bg-green-50 text-green-600 border border-green-200 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+    </div>
+    <h1 class="text-3xl font-black text-gray-950 tracking-tight">Order Placed Successfully!</h1>
+    <p class="mt-3 text-gray-600 text-base">
+        Thank you for your purchase. Your order identifier tracking code is <strong class="text-gray-900">#{{ order.id }}</strong>.
+    </p>
+    
+    <div class="mt-10">
+        <a href="{% url 'store:home' %}" class="bg-gray-900 text-white font-semibold px-6 py-3 rounded-md hover:bg-gray-800 transition shadow-sm">
+            Continue Shopping
+        </a>
+    </div>
+</div>
+{% endblock %}

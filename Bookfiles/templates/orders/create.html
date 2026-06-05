@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - BookFiles{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-6">
+    <h2 class="text-3xl font-extrabold text-gray-950 tracking-tight mb-8">Shipping & Checkout</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Delivery Information</h3>
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-md hover:bg-blue-700 transition cursor-pointer mt-4 shadow-sm">
+                    Place Order (Cash on Delivery)
+                </button>
+            </form>
+        </div>
+
+        <div class="bg-gray-100 border border-gray-200 rounded-xl p-6 h-fit">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Order Summary</h3>
+            <div class="space-y-2 text-sm text-gray-600 border-b border-gray-200 pb-4 mb-4">
+                <div class="flex justify-between">
+                    <span>Total items:</span>
+                    <span class="font-bold text-gray-900">{{ cart|length }}</span>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="font-medium text-gray-800 text-base">Total Cost:</span>
+                <span class="text-2xl font-black text-blue-600">${{ cart.get_total_price }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

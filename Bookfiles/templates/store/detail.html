@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }} - BookFiles{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8 bg-white border border-gray-200 rounded-2xl p-8 shadow-xs grid grid-cols-1 md:grid-cols-2 gap-8">
+    
+    <div class="w-full h-96 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center font-black p-6 text-blue-600 text-xl text-center uppercase tracking-wider">
+        {% if product.image %}
+            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover rounded-xl shadow-xs">
+        {% else %}
+            {{ product.title }}
+        {% endif %}
+    </div>
+
+    <div class="flex flex-col justify-between">
+        <div>
+            <span class="text-xs font-bold bg-blue-50 text-blue-600 px-2.5 py-1 rounded-md uppercase tracking-wider">
+                {{ product.category.name }}
+            </span>
+            <h1 class="text-3xl font-black tracking-tight text-gray-950 mt-4">{{ product.title }}</h1>
+            <p class="text-sm text-gray-500 mt-1">Written By: <strong class="text-gray-800">{{ product.author|default:"Unknown Author" }}</strong></p>
+            
+            <div class="mt-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Description</h3>
+                <p class="text-sm text-gray-600 leading-relaxed">{{ product.description|default:"No book overview description notes provided yet." }}</p>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-gray-100">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-gray-500 text-sm">Unit List Price:</span>
+                <span class="text-3xl font-black text-gray-950">${{ product.price }}</span>
+            </div>
+            
+            {% if product.stock > 0 %}
+                <form action="{% url 'cart:cart_add' product.id %}" method="post" class="w-full">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-md transition shadow-xs text-sm cursor-pointer text-center block">
+                        Add to Session Cart
+                    </button>
+                </form>
+            {% else %}
+                <button disabled class="w-full bg-gray-200 text-gray-400 font-semibold py-3 rounded-md text-sm cursor-not-allowed">
+                    Temporarily Out of Stock
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,79 +1,72 @@
 {% extends 'base.html' %}
 
-{% block title %}Home - BookFiles Store{% endblock %}
+{% block title %}{% if category %}{{ category.name }} - BookFiles{% else %}Home - BookFiles Store{% endif %}{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <div class="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-xs px-6">
-        <h1 class="text-4xl font-extrabold tracking-tight text-gray-950 sm:text-5xl">
-            Welcome to <span class="text-blue-600">BookFiles</span>
-        </h1>
-        <p class="mt-4 text-lg text-gray-600 max-w-xl mx-auto">
-            Your personalized, secure hands-on e-commerce store built entirely from scratch with Django.
-        </p>
-        
-        <div class="mt-10 flex items-center justify-center gap-x-6">
-            {% if user.is_authenticated %}
-                <div class="p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg font-medium inline-flex items-center gap-2 shadow-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-green-600">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Securely authenticated as {{ user.email }}
-                </div>
-            {% else %}
-                <a href="{% url 'signup' %}" class="bg-blue-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-blue-700 transition shadow-xs cursor-pointer">
-                    Get Started
+<div class="max-w-6xl mx-auto mt-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+    
+    <aside class="md:col-span-1">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">Categories</h2>
+        <ul class="space-y-1">
+            <li>
+                <a href="{% url 'store:home' %}" class="block px-3 py-2 rounded-md text-sm font-medium {% if not category %}bg-blue-50 text-blue-600{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+                    All Books
                 </a>
-                <a href="{% url 'login' %}" class="text-sm font-semibold text-gray-900 hover:text-blue-600 transition">
-                    Log in <span aria-hidden="true">→</span>
-                </a>
-            {% endif %}
-        </div>
-    </div>
+            </li>
+            {% for c in categories %}
+                <li>
+                    <a href="{{ c.get_absolute_url }}" class="block px-3 py-2 rounded-md text-sm font-medium {% if category.slug == c.slug %}bg-blue-50 text-blue-600{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+                        {{ c.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
 
-    <div class="mt-12">
-        <h2 class="text-2xl font-bold tracking-tight text-gray-900 mb-6">Explore Our Bookstore Catalog</h2>
+    <div class="md:col-span-3">
+        <h2 class="text-2xl font-black text-gray-950 mb-6">
+            {% if category %}{{ category.name }}{% else %}Explore Our Bookstore Catalog{% endif %}
+        </h2>
         
         {% if products %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for product in products %}
                     <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-xs flex flex-col justify-between hover:shadow-md transition duration-200">
-                        <div>
-                            <div class="w-full h-56 bg-blue-50 text-blue-600 flex items-center justify-center rounded-lg font-bold text-center p-4 mb-4 border border-blue-100 uppercase tracking-wide text-sm line-clamp-3">
-                                {{ product.title }}
+                        
+                        <a href="{{ product.get_absolute_url }}" class="block group">
+                            <div class="w-full h-48 bg-blue-50 text-blue-600 flex items-center justify-center rounded-lg font-bold text-center p-4 mb-4 border border-blue-100 group-hover:opacity-90 transition">
+                                {% if product.image %}
+                                    <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-full object-cover rounded-lg">
+                                {% else %}
+                                    {{ product.title }}
+                                {% endif %}
                             </div>
-                            
-                            <h3 class="font-bold text-gray-900 text-base line-clamp-1" title="{{ product.title }}">
+                            <h3 class="font-bold text-gray-900 text-base group-hover:text-blue-600 transition line-clamp-1">
                                 {{ product.title }}
                             </h3>
-                            <p class="text-xs text-gray-500 mt-1">
-                                By <span class="font-medium text-gray-700">{{ product.author|default:"Unknown Author" }}</span>
-                            </p>
-                            <p class="text-xs text-blue-500 font-semibold bg-blue-50 inline-block px-2 py-0.5 rounded-sm mt-2">
-                                {{ product.category.name }}
-                            </p>
-                        </div>
+                            <p class="text-xs text-gray-500 mt-1">By {{ product.author|default:"Unknown Author" }}</p>
+                        </a>
                         
                         <div class="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
                             <span class="text-lg font-black text-gray-950">${{ product.price }}</span>
                             
-                            <button class="bg-gray-900 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded-md transition shadow-xs cursor-pointer flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                Add to Cart
-                            </button>
+                            <form action="{% url 'cart:cart_add' product.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-gray-900 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded-md transition shadow-xs cursor-pointer flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                            </form>
                         </div>
+
                     </div>
                 {% endfor %}
             </div>
         {% else %}
             <div class="bg-white border border-gray-200 border-dashed rounded-xl p-12 text-center text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-12 h-12 mx-auto mb-4 text-gray-400">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                </svg>
-                <p class="text-lg font-medium text-gray-700">No books in store right now.</p>
-                <p class="text-sm text-gray-500 mt-1">Our system mechanics are ready! Use your administrative account to populate your storefront database.</p>
+                <p class="text-lg font-medium text-gray-700">No books found matching this filter profile.</p>
             </div>
         {% endif %}
     </div>
